@@ -22,7 +22,7 @@ namespace Banking.Models.Domain
             {
                 return _balance;
             }
-            private set
+            protected set
             {
                 if (value < 0)
                     throw new ArgumentException("No negative balance allowed");
@@ -47,10 +47,6 @@ namespace Banking.Models.Domain
             Balance = balance;
         }
 
-        public BankAccount()
-        {
-        }
-
         #endregion
 
         #region Methods
@@ -61,10 +57,30 @@ namespace Banking.Models.Domain
             _transactions.Add(new Transaction(amount,TransactionType.Deposit));
         }
 
-        public void Withdraw(decimal amount)
+        public virtual void Withdraw(decimal amount) //moet virtual zijn zodat gedrag in get en set kan worden overschreven
         {
             Balance -= amount;
             _transactions.Add(new Transaction(amount, TransactionType.Withdraw));
+        }
+
+        public override string ToString()
+        {
+            return $"{AccountNumber} -- {Balance}";
+        }
+
+        public override bool Equals(object obj)
+        {
+            BankAccount ba = obj as BankAccount; // as wordt gebruikt voor typecast te doen, werpt geen exception als het niet gaat, object wordt gewoon null
+            if (ba == null)
+            {
+                return false;
+            }
+            return AccountNumber == ba.AccountNumber;
+        }
+
+        public override int GetHashCode()
+        {
+            return AccountNumber.GetHashCode();
         }
 
         #endregion
